@@ -14,19 +14,23 @@ import java.util.Properties;
 /**
  * Created by zhmcode on 2018/12/10 0010.
  */
-public class KafkaConsumerDemo {
+public class KafkaConsumerDemo extends Thread {
+
     private final static String ZOOKEEPER_LIST = "192.168.126.31:2181,192.168.126.32:2181,192.168.126.33:2181";
     private final static String GROUP_ID = "test_group10";
     private final static String TPOPIC = "test10";
+    private ConsumerConnector consumerConnector;
 
-
-    public static void  consumer() {
+    public  KafkaConsumerDemo() {
         Properties properties = new Properties();
         properties.put("zookeeper.connect", ZOOKEEPER_LIST);
         properties.put("group.id", GROUP_ID);
         ConsumerConfig consumerConfig = new ConsumerConfig(properties);
-        ConsumerConnector consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
+        consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
+}
 
+    @Override
+    public void run() {
         Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
         topicCountMap.put(TPOPIC, new Integer(1));
         Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumerConnector.createMessageStreams(topicCountMap);
@@ -41,5 +45,4 @@ public class KafkaConsumerDemo {
             }
         }
     }
-
 }

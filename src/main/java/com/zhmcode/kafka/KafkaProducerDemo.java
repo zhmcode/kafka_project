@@ -1,37 +1,38 @@
 package com.zhmcode.kafka;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
 import java.util.Properties;
 
 /**
  * Created by zhmcode on 2018/12/10 0010.
  */
-public class KafkaProducerDemo {
+public class KafkaProducerDemo extends Thread{
 
     private final static String BROKER_LIST = "192.168.126.31:9092";
     private final static String TPOPIC = "test10";
+    private Producer<Integer, String> kafkaProducer;
 
-    public static void  producer() {
+    public   KafkaProducerDemo() {
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", BROKER_LIST);
-        properties.put("serializer.class", "kafka.serializer.StringEncoder");
+        properties.put("metadata.broker.list", BROKER_LIST);
         properties.put("serializer.class", "kafka.serializer.StringEncoder");
         properties.put("request.required.acks","1");
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaProducer = new Producer<Integer,String>(new ProducerConfig(properties));
+    }
 
-        KafkaProducer<Integer, String> kafkaProducer = new KafkaProducer<Integer,String>(properties);
-        for (int i = 0; i < 10; i++) {
+    @Override
+    public void run() {
+        for (int i = 0; i < 20; i++) {
+            String msg = "zhmkafka"+i;
+            kafkaProducer.send(new KeyedMessage<Integer, String>(TPOPIC,msg));
+            System.out.println(msg);
             try {
-                kafkaProducer.send(new ProducerRecord<Integer, String>(TPOPIC,"zhmkafka"+i));
                 Thread.sleep(2000);
-                System.out.println("Receive->["+"zhmkafka"+i+"]");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        kafkaProducer.close();
     }
-
 }

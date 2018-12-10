@@ -6,7 +6,7 @@ package com.zhmcode.kafka;
 public class TestProducerAndConsumer {
 
     public static void main(String[] args) {
-        KafkaProducerDemo.producer();
-        KafkaConsumerDemo.consumer();
+        new KafkaProducerDemo().start();
+        new KafkaConsumerDemo().start();
     }
 }
